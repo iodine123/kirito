@@ -1,0 +1,17 @@
+1. 500 code indicate the server issues, usually its happend because the server resources are too low to handle the traffic. 
+    If this issue occurs we need to check the servers or nodes resources. At my current company we have grafana dashboard to    
+    track the resources usage, we can see the historical data of the servers and services state. So, we can find out what happened 
+    when the servers down or inaccessible. First action is to give additional recources to the servers or to the cluster and bring 
+    up the application or services again.
+2. The most important things, we need to talk with the developer about the application resource consume, we need to make sure that the
+    application doesnt take a lot of resources, and we need to do load test on UAT or SIT env, make sure everythings is ok on this testing 
+    env, and also check the incoming request, make sure that this is not come from dos or ddos attack, need to review the incoming request 
+    and our webserver proxy conf, need to make sure that the security conf is correct.
+    And then on devops side we can give additional resources to the servers, but the cons of this action it will take a lot of cost. So, 
+    the best way to anticipate this issue we need to add monitoring and alerting system on our environment, so we can make an action asap
+    when the issue almost happend, furthermore we can use autoscalling on our application.
+    
+3. The tools to handle this issues are:
+    monitoring tools: prometheus and grafana
+    autoscalling: ansible, terraform or cloudformation
+    we can playing with these tools to make automation scale up on our servers, application, and services.

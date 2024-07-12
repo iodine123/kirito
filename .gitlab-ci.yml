@@ -1,5 +1,5 @@
 stages:
-  # - build 
+  - build 
   - deploy
 
 variables:
@@ -8,19 +8,19 @@ variables:
   DOCKER_USERNAME: iodinehanifan
   DOCKER_DRIVER: overlay2
 
-# build:
-#   stage: build
-#   image: docker:latest
-#   services:
-#     - docker:dind
-#   script:
-#     - docker build -t $IMAGE_NAME:$CI_COMMIT_SHA App/.
-#     - docker tag $IMAGE_NAME:$CI_COMMIT_SHA $IMAGE_NAME:latest
-#     - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-#     - docker push $IMAGE_NAME:$CI_COMMIT_SHA
-#     - docker push $IMAGE_NAME:latest
-#   only:
-#     - main
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t $IMAGE_NAME:$CI_COMMIT_SHA App/.
+    - docker tag $IMAGE_NAME:$CI_COMMIT_SHA $IMAGE_NAME:latest
+    - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+    - docker push $IMAGE_NAME:$CI_COMMIT_SHA
+    - docker push $IMAGE_NAME:latest
+  only:
+    - main
 
 deploy:
   stage: deploy
@@ -31,10 +31,12 @@ deploy:
     - echo "Deploy new images by change version on manifest file"
     - git config --global user.email "iodinehanifan@gmail.com"
     - git config --global user.name "iodine123"
-    - git clone https://gitlab.com/iodine123/kirito.git
+    - git remote set-url origin https://$GITLAB_USER:$GITLAB_TOKEN@gitlab.com/iodine123/kirito.git
+    - git pull origin main
     - ls -a
     - sed -i "s|image:\ iodinehanifan/kirito:.*|image:\ iodinehanifan/kirito:$CI_COMMIT_SHA|g" Deployment/app-manifest/deployment-app.yml
-    - git add Deployment/app-manifest/deployment-app.yml
+    - git checkout -b main
+    - git add .
     - git commit -m "Update image version to $NEW_IMAGE_VERSION"
     - git push origin main
   only:

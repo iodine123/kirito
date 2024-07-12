@@ -1,0 +1,41 @@
+stages:
+  # - build 
+  - deploy
+
+variables:
+  IMAGE_NAME: iodinehanifan/kirito
+  KUBE_CONTEXT: iodine123/kirito:k8s-connections
+  DOCKER_USERNAME: iodinehanifan
+  DOCKER_DRIVER: overlay2
+
+# build:
+#   stage: build
+#   image: docker:latest
+#   services:
+#     - docker:dind
+#   script:
+#     - docker build -t $IMAGE_NAME:$CI_COMMIT_SHA App/.
+#     - docker tag $IMAGE_NAME:$CI_COMMIT_SHA $IMAGE_NAME:latest
+#     - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+#     - docker push $IMAGE_NAME:$CI_COMMIT_SHA
+#     - docker push $IMAGE_NAME:latest
+#   only:
+#     - main
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache git
+  script:
+    - echo "Deploy new images by change version on manifest file"
+    - git config --global user.email "iodinehanifan@gmail.com"
+    - git config --global user.name "iodine123"
+    - git clone https://gitlab.com/iodine123/kirito.git
+    - ls -a
+    - sed -i "s|image:\ iodinehanifan/kirito:.*|image:\ iodinehanifan/kirito:$CI_COMMIT_SHA|g" Deployment/app-manifest/deployment-app.yml
+    - git add Deployment/app-manifest/deployment-app.yml
+    - git commit -m "Update image version to $NEW_IMAGE_VERSION"
+    - git push origin main
+  only:
+    - main

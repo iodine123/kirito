@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kirito-webserver-deployment
+spec:
+  selector:
+    matchLabels:
+      app: kirito-webserver-deployment
+  template:
+    metadata:
+      labels:
+        app: kirito-webserver-deployment
+    spec:
+      containers:
+      - name: kirito-webserver-deployment
+        image: iodinehanifan/kirito-webserver
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
